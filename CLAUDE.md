@@ -3,7 +3,7 @@
 ## 프로젝트 구조
 
 - `front-end/` : React + TypeScript + Vite + shadcn ui + tailwind css 프론트엔드
-- `back-end/` : Spring Boot 4.0.3 + JPA + PostgreSQL + MongoDB 백엔드 (Groovy)
+- `back-end/` : Spring Boot 4.0.3 + JPA + PostgreSQL + MongoDB 백엔드 (Java)
 - `song-crawling/` : Python 크롤링 스크립트
 
 ---
@@ -51,6 +51,13 @@
 - **DB**: PostgreSQL (유저, 플레이리스트, 인증) + MongoDB (노래 데이터)
 - **사용 도구**: Read, Edit, Write, Glob, Grep
 
+### devops
+- **역할**: DevOps/인프라 전문가 — 컨테이너화, CI/CD, 배포 자동화
+- **담당 경로**: 프로젝트 루트 (Dockerfile, docker-compose, .github/workflows, Nginx 설정)
+- **허용 작업**: Dockerfile/docker-compose 작성, GitHub Actions 워크플로우, Nginx 설정, 환경 변수 관리, 모니터링 설정
+- **제한**: `front-end/src/`, `back-end/src/`, `song-crawling/` 내부 소스 코드 수정 금지
+- **사용 도구**: Read, Edit, Write, Glob, Grep, Bash
+
 ---
 
 ## 협업 규칙
@@ -59,17 +66,20 @@
 2. `code-reviewer`와 `security-reviewer`는 다른 팀원의 작업이 완료된 후 리뷰를 시작한다.
 3. `dba`가 스키마를 확정한 후 `backend-dev`가 JPA 엔티티를 작성한다.
 4. 팀원 간 의존 작업은 명시적으로 완료 신호를 주고받는다.
+5. `devops`는 소스 코드를 수정하지 않고, 인프라/배포 파일만 관리한다.
+6. `devops`가 보안 관련 설정을 변경할 때는 `security-reviewer`와 협의한다.
 
 ---
 
 ## 팀 생성 예시 프롬프트
 
 ```
-Create an agent team with 6 teammates:
+Create an agent team with 7 teammates:
 - "frontend-dev": CLAUDE.md의 frontend-dev 역할 수행
 - "backend-dev": CLAUDE.md의 backend-dev 역할 수행
 - "crawler-dev": CLAUDE.md의 crawler-dev 역할 수행
 - "dba": CLAUDE.md의 dba 역할 수행
+- "devops": CLAUDE.md의 devops 역할 수행
 - "code-reviewer": CLAUDE.md의 code-reviewer 역할 수행
 - "security-reviewer": CLAUDE.md의 security-reviewer 역할 수행
 
