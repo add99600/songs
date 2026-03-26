@@ -39,8 +39,7 @@ const SearchPage = () => {
               />
               <Button
                 type="submit"
-                className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-lg"
-                size="sm"
+                className="absolute right-1.5 top-1/2 -translate-y-1/2 h-10 px-5 rounded-lg"
                 disabled={loading}
               >
                 {loading ? <Disc3 className="size-4 animate-spin" /> : '검색'}
