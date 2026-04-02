@@ -16,6 +16,10 @@ public class PlaylistSongResponse {
 
     private Long id;
     private String songId;
+    private String songNo;
+    private String songTitle;
+    private String songSinger;
+    private String songBrand;
     private int sortOrder;
     private String lyricsNote;
     private String extraInfo;
@@ -25,6 +29,10 @@ public class PlaylistSongResponse {
         return new PlaylistSongResponse(
             playlistSong.getId(),
             playlistSong.getSongId(),
+            playlistSong.getSongNo(),
+            playlistSong.getSongTitle(),
+            playlistSong.getSongSinger(),
+            playlistSong.getSongBrand(),
             playlistSong.getSortOrder(),
             playlistSong.getLyricsNote(),
             playlistSong.getExtraInfo(),

@@ -11,6 +11,9 @@ import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
+/**
+ * JWT 토큰 생성, 검증, 파싱 유틸리티.
+ */
 @Component
 public class JwtUtil {
 
@@ -19,10 +22,14 @@ public class JwtUtil {
     @Value("${jwt.secret}")
     private String secret;
 
+    // HMAC-SHA 서명 키를 생성
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
+    /**
+     * 사용자 ID를 subject로 하여 JWT를 생성한다.
+     */
     public String generateToken(Long userId) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + EXPIRATION_MS);
@@ -35,6 +42,9 @@ public class JwtUtil {
                 .compact();
     }
 
+    /**
+     * JWT 토큰의 유효성을 검증한다.
+     */
     public boolean validateToken(String token) {
         try {
             parseClaims(token);
@@ -44,11 +54,15 @@ public class JwtUtil {
         }
     }
 
+    /**
+     * JWT에서 사용자 ID를 추출한다.
+     */
     public Long getUserId(String token) {
         String subject = parseClaims(token).getSubject();
         return Long.parseLong(subject);
     }
 
+    // 토큰을 파싱하여 Claims를 반환
     private Claims parseClaims(String token) {
         return Jwts.parser()
                 .verifyWith(getSigningKey())

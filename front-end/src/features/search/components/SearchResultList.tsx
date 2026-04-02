@@ -1,14 +1,18 @@
-import { Music, Mic2 } from 'lucide-react'
+import { Music, Mic2, Loader2 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { SongCard } from '@/features/search/components/SongCard'
 import type { Song } from '@/features/search/types'
 
 interface SearchResultListProps {
-  results: Song[]
-  hasSearched: boolean
+  songs: Song[]
+  totalElements: number
+  hasMore: boolean
   loading: boolean
+  hasSearched: boolean
+  onLoadMore: () => void
 }
 
-export const SearchResultList = ({ results, hasSearched, loading }: SearchResultListProps) => {
+export const SearchResultList = ({ songs, totalElements, hasMore, loading, hasSearched, onLoadMore }: SearchResultListProps) => {
   if (!hasSearched) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
@@ -23,7 +27,7 @@ export const SearchResultList = ({ results, hasSearched, loading }: SearchResult
     )
   }
 
-  if (loading) {
+  if (loading && songs.length === 0) {
     return (
       <div className="space-y-3 pt-4">
         {Array.from({ length: 5 }).map((_, i) => (
@@ -41,7 +45,7 @@ export const SearchResultList = ({ results, hasSearched, loading }: SearchResult
     )
   }
 
-  if (results.length === 0) {
+  if (songs.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
         <div className="w-20 h-20 rounded-2xl bg-muted flex items-center justify-center mb-5">
@@ -58,11 +62,19 @@ export const SearchResultList = ({ results, hasSearched, loading }: SearchResult
   return (
     <div className="space-y-2 pt-4">
       <p className="text-sm text-muted-foreground mb-3">
-        {results.length}개의 검색 결과
+        {totalElements}곡 검색됨
       </p>
-      {results.map((song, idx) => (
+      {songs.map((song, idx) => (
         <SongCard key={song.id ?? idx} song={song} />
       ))}
+      {hasMore && (
+        <div className="flex justify-center pt-4">
+          <Button variant="outline" onClick={onLoadMore} disabled={loading}>
+            {loading ? <Loader2 className="size-4 animate-spin mr-2" /> : null}
+            더 보기
+          </Button>
+        </div>
+      )}
     </div>
   )
 }

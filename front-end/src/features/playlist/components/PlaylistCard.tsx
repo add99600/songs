@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom'
 import { Globe, Lock, MoreHorizontal } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -22,8 +23,17 @@ const formatDate = (dateStr: string) => {
 }
 
 export const PlaylistCard = ({ playlist, index }: PlaylistCardProps) => {
+  const navigate = useNavigate()
+
+  const handleClick = () => {
+    navigate(`/my-folders/${playlist.id}`, { state: { playlist } })
+  }
+
   return (
-    <div className="group rounded-xl border bg-card overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer">
+    <div
+      onClick={handleClick}
+      className="group rounded-xl border bg-card overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer"
+    >
       <div className={`h-1.5 bg-gradient-to-r ${cardAccents[index % cardAccents.length]}`} />
       <div className="p-5">
         <div className="flex items-start justify-between">

@@ -1,7 +1,6 @@
 package org.example.backendspring.playlist.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,6 +13,15 @@ import lombok.Setter;
 public class AddSongRequest {
 
     @NotBlank(message = "곡 ID는 필수입니다.")
-    @Size(min = 24, max = 24, message = "곡 ID는 24자리 MongoDB ObjectId여야 합니다.")
     private String songId;
+
+    private String songNo;
+
+    @NotBlank(message = "곡 제목은 필수입니다.")
+    private String title;
+
+    @NotBlank(message = "가수명은 필수입니다.")
+    private String singer;
+
+    private String brand;
 }

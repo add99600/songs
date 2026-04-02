@@ -7,7 +7,7 @@ import { SearchResultList } from '@/features/search/components/SearchResultList'
 
 const SearchPage = () => {
   const [searchQuery, setSearchQuery] = useState('')
-  const { results, hasSearched, loading, search } = useSearchSongs()
+  const { songs, loading, totalElements, hasMore, hasSearched, search, loadMore } = useSearchSongs()
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -50,7 +50,14 @@ const SearchPage = () => {
       </div>
 
       <div className="container max-w-2xl mx-auto px-4 sm:px-6 -mt-2 pb-8">
-        <SearchResultList results={results} hasSearched={hasSearched} loading={loading} />
+        <SearchResultList
+          songs={songs}
+          totalElements={totalElements}
+          hasMore={hasMore}
+          loading={loading}
+          hasSearched={hasSearched}
+          onLoadMore={loadMore}
+        />
       </div>
     </div>
   )

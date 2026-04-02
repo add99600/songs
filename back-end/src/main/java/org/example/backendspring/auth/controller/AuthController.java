@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.NoSuchElementException;
 
+/**
+ * 인증 관련 REST API 컨트롤러.
+ */
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -25,6 +28,9 @@ public class AuthController {
         this.userRepository = userRepository;
     }
 
+    /**
+     * 로그아웃 처리. auth_token 쿠키를 만료시킨다.
+     */
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
         ResponseCookie cookie = ResponseCookie.from("auth_token", "")
@@ -39,6 +45,9 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * 현재 로그인된 사용자 정보를 반환한다.
+     */
     @GetMapping("/me")
     public ResponseEntity<UserResponse> me(Authentication authentication) {
         Long userId = (Long) authentication.getPrincipal();

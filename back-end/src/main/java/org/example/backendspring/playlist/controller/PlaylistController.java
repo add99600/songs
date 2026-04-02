@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * 플레이리스트 CRUD 및 곡 관리 REST API 컨트롤러.
+ */
 @Validated
 @RestController
 @RequestMapping("/api/playlists")
@@ -23,6 +26,9 @@ public class PlaylistController {
         this.playlistService = playlistService;
     }
 
+    /**
+     * 현재 로그인 사용자의 플레이리스트 목록을 조회한다.
+     */
     @GetMapping
     public ResponseEntity<List<PlaylistResponse>> getMyPlaylists(Authentication authentication) {
         Long userId = (Long) authentication.getPrincipal();
@@ -30,12 +36,18 @@ public class PlaylistController {
         return ResponseEntity.ok(playlists);
     }
 
+    /**
+     * 공개 플레이리스트 목록을 조회한다.
+     */
     @GetMapping("/public")
     public ResponseEntity<List<PlaylistResponse>> getPublicPlaylists() {
         List<PlaylistResponse> playlists = playlistService.getPublicPlaylists();
         return ResponseEntity.ok(playlists);
     }
 
+    /**
+     * 새 플레이리스트를 생성한다.
+     */
     @PostMapping
     public ResponseEntity<PlaylistResponse> createPlaylist(
             Authentication authentication,
@@ -46,6 +58,9 @@ public class PlaylistController {
         return ResponseEntity.status(HttpStatus.CREATED).body(playlist);
     }
 
+    /**
+     * 플레이리스트 정보를 수정한다.
+     */
     @PutMapping("/{id}")
     public ResponseEntity<PlaylistResponse> updatePlaylist(
             Authentication authentication,
@@ -57,6 +72,9 @@ public class PlaylistController {
         return ResponseEntity.ok(playlist);
     }
 
+    /**
+     * 플레이리스트를 삭제한다.
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePlaylist(
             Authentication authentication,
@@ -67,14 +85,22 @@ public class PlaylistController {
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * 플레이리스트에 포함된 노래 목록을 조회한다.
+     */
     @GetMapping("/{playlistId}/songs")
     public ResponseEntity<List<PlaylistSongResponse>> getSongs(
-            @Positive @PathVariable Long playlistId
+            @Positive @PathVariable Long playlistId,
+            Authentication authentication
     ) {
-        List<PlaylistSongResponse> songs = playlistService.getSongsByPlaylistId(playlistId);
+        Long userId = (Long) authentication.getPrincipal();
+        List<PlaylistSongResponse> songs = playlistService.getSongsByPlaylistId(playlistId, userId);
         return ResponseEntity.ok(songs);
     }
 
+    /**
+     * 플레이리스트에 노래를 추가한다.
+     */
     @PostMapping("/{id}/songs")
     public ResponseEntity<PlaylistSongResponse> addSong(
             Authentication authentication,
@@ -86,6 +112,9 @@ public class PlaylistController {
         return ResponseEntity.status(HttpStatus.CREATED).body(song);
     }
 
+    /**
+     * 플레이리스트에서 노래를 제거한다.
+     */
     @DeleteMapping("/{id}/songs/{songId}")
     public ResponseEntity<Void> removeSong(
             Authentication authentication,
@@ -97,6 +126,9 @@ public class PlaylistController {
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * 현재 사용자에게 공유된 플레이리스트 목록을 조회한다.
+     */
     @GetMapping("/shared")
     public ResponseEntity<List<PlaylistResponse>> getSharedPlaylists(Authentication authentication) {
         Long userId = (Long) authentication.getPrincipal();
