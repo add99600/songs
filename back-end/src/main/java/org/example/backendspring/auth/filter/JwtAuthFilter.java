@@ -15,6 +15,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * JWT 인증 필터. 요청마다 토큰을 검증하고 SecurityContext에 인증 정보를 설정한다.
+ */
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 
@@ -24,6 +27,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         this.jwtUtil = jwtUtil;
     }
 
+    /**
+     * JWT 토큰을 검증하고 유효하면 SecurityContext에 인증 객체를 설정한다.
+     */
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
@@ -49,6 +55,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
+    // Authorization 헤더 또는 auth_token 쿠키에서 JWT를 추출
     private static String extractToken(HttpServletRequest request) {
         String header = request.getHeader("Authorization");
         if (header != null && header.startsWith("Bearer ")) {

@@ -15,11 +15,17 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+/**
+ * 전역 예외 처리 핸들러.
+ */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
+    /**
+     * Bean Validation 실패 시 필드별 에러 메시지를 반환한다.
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
         Map<String, String> fieldErrors = new HashMap<>();
@@ -33,6 +39,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
 
+    /**
+     * 요청 본문 파싱 실패 시 에러 메시지를 반환한다.
+     */
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<Map<String, String>> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
         return ResponseEntity
@@ -40,6 +49,9 @@ public class GlobalExceptionHandler {
                 .body(Map.of("message", "요청 본문을 읽을 수 없습니다."));
     }
 
+    /**
+     * 접근 권한 부족 시 403 응답을 반환한다.
+     */
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<Map<String, String>> handleAccessDenied(AccessDeniedException ex) {
         return ResponseEntity
@@ -47,6 +59,9 @@ public class GlobalExceptionHandler {
                 .body(Map.of("message", "접근 권한이 없습니다."));
     }
 
+    /**
+     * 제약 조건 위반 시 에러 메시지를 반환한다.
+     */
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<Map<String, String>> handleConstraintViolation(ConstraintViolationException ex) {
         return ResponseEntity
@@ -54,6 +69,9 @@ public class GlobalExceptionHandler {
                 .body(Map.of("message", ex.getMessage()));
     }
 
+    /**
+     * 잘못된 인자 전달 시 에러 메시지를 반환한다.
+     */
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, String>> handleIllegalArgument(IllegalArgumentException ex) {
         return ResponseEntity
@@ -61,6 +79,9 @@ public class GlobalExceptionHandler {
                 .body(Map.of("message", ex.getMessage()));
     }
 
+    /**
+     * 리소스를 찾을 수 없을 때 404 응답을 반환한다.
+     */
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<Map<String, String>> handleNoSuchElement(NoSuchElementException ex) {
         return ResponseEntity
@@ -68,6 +89,9 @@ public class GlobalExceptionHandler {
                 .body(Map.of("message", ex.getMessage()));
     }
 
+    /**
+     * 처리되지 않은 예외 발생 시 500 응답을 반환한다.
+     */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, String>> handleException(Exception ex) {
         log.error("Unhandled exception occurred", ex);

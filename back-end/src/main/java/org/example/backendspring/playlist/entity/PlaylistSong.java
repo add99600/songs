@@ -32,8 +32,20 @@ public class PlaylistSong {
     )
     private Playlist playlist;
 
-    @Column(name = "song_id", nullable = false, length = 24)
+    @Column(name = "song_id", nullable = false, length = 200)
     private String songId;
+
+    @Column(name = "song_no", length = 20)
+    private String songNo;
+
+    @Column(name = "song_title", length = 200)
+    private String songTitle;
+
+    @Column(name = "song_singer", length = 200)
+    private String songSinger;
+
+    @Column(name = "song_brand", length = 10)
+    private String songBrand;
 
     @Column(name = "sort_order", nullable = false)
     private int sortOrder = 0;

@@ -9,12 +9,20 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+
+import org.springframework.beans.factory.annotation.Value;
+
+import org.example.backendspring.song.dto.PagedSongResponse;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * 노래 검색 비즈니스 로직 서비스.
+ */
 @Service
 public class SongService {
 
@@ -23,6 +31,9 @@ public class SongService {
     private final SongRepository songRepository;
     private final MongoTemplate mongoTemplate;
     private final MananaKaraokeClient mananaClient;
+
+    @Value("${song.search.use-mongodb:false}")
+    private boolean useMongodb;
 
     public SongService(
             SongRepository songRepository,
@@ -35,24 +46,33 @@ public class SongService {
     }
 
     /**
-     * 노래 검색 (MongoDB 우선, 결과 없으면 외부 API fallback).
+     * 전체 검색 결과를 캐시한다.
      */
-    public List<Song> search(String keyword) {
+    @Cacheable(value = "searchResults", key = "#keyword.toLowerCase()")
+    public List<Song> searchAll(String keyword) {
         if (keyword == null || keyword.isBlank()) {
             return Collections.emptyList();
         }
 
         String trimmed = keyword.trim();
 
-        // 1차: MongoDB 검색
-        List<Song> mongoResults = searchFromMongo(trimmed);
-        if (!mongoResults.isEmpty()) {
-            return mongoResults;
+        if (useMongodb) {
+            List<Song> mongoResults = searchFromMongo(trimmed);
+            if (!mongoResults.isEmpty()) {
+                return mongoResults;
+            }
+            log.info("MongoDB 결과 없음, 외부 API로 fallback 검색: keyword={}", trimmed);
         }
 
-        // 2차: 외부 API fallback
-        log.info("MongoDB 결과 없음, 외부 API로 fallback 검색: keyword={}", trimmed);
         return searchFromExternalApi(trimmed);
+    }
+
+    /**
+     * 페이징된 검색 결과를 반환한다.
+     */
+    public PagedSongResponse searchPaged(String keyword, int page, int size) {
+        List<Song> allResults = searchAll(keyword);
+        return PagedSongResponse.of(allResults, page, size);
     }
 
     /**
@@ -85,6 +105,9 @@ public class SongService {
         return results.stream().map(this::toSong).collect(Collectors.toList());
     }
 
+    /**
+     * MongoDB ID로 노래를 단건 조회한다.
+     */
     public Song findById(String id) {
         return songRepository.findById(id).orElse(null);
     }
@@ -93,15 +116,22 @@ public class SongService {
     // Private helpers
     // ---------------------------------------------------------------
 
+    // MongoDB에서 제목 또는 가수명으로 검색
     private List<Song> searchFromMongo(String keyword) {
-        Criteria criteria = new Criteria().orOperator(
-                Criteria.where("title").regex(keyword, "i"),
-                Criteria.where("singer").regex(keyword, "i")
-        );
-        Query query = new Query(criteria);
-        return mongoTemplate.find(query, Song.class);
+        try {
+            Criteria criteria = new Criteria().orOperator(
+                    Criteria.where("title").regex(keyword, "i"),
+                    Criteria.where("singer").regex(keyword, "i")
+            );
+            Query query = new Query(criteria);
+            return mongoTemplate.find(query, Song.class);
+        } catch (Exception e) {
+            log.warn("MongoDB 검색 실패, 외부 API로 fallback: {}", e.getMessage());
+            return Collections.emptyList();
+        }
     }
 
+    // 외부 API로 제목 -> 가수 순서로 fallback 검색
     private List<Song> searchFromExternalApi(String keyword) {
         // 제목 검색 먼저 시도
         List<MananaSongResponse> byTitle = mananaClient.searchByTitle(keyword);
@@ -114,6 +144,7 @@ public class SongService {
         return bySinger.stream().map(this::toSong).collect(Collectors.toList());
     }
 
+    // 외부 API 응답을 Song 엔티티로 변환
     private Song toSong(MananaSongResponse res) {
         Song song = new Song();
         song.setNo(res.getNo());

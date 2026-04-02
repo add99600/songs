@@ -13,6 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Google OAuth2 사용자 정보를 처리하는 서비스.
+ */
 @Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
@@ -22,6 +25,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         this.userRepository = userRepository;
     }
 
+    /**
+     * OAuth2 사용자 정보를 로드하고, 신규 사용자는 DB에 저장한다.
+     */
     @Override
     @Transactional
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {

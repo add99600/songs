@@ -14,10 +14,13 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.time.Duration;
 
+/**
+ * OAuth2 로그인 성공 핸들러. JWT를 발급하고 프론트엔드로 리다이렉트한다.
+ */
 @Component
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
-    @Value("${oauth2.redirect-uri:http://localhost:5173}")
+    @Value("${oauth2.redirect-uri:http://localhost:5200}")
     private String redirectUri;
 
     private final JwtUtil jwtUtil;
@@ -26,6 +29,9 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         this.jwtUtil = jwtUtil;
     }
 
+    /**
+     * 인증 성공 시 JWT를 쿠키에 설정하고 콜백 URL로 리다이렉트한다.
+     */
     @Override
     public void onAuthenticationSuccess(
             HttpServletRequest request,

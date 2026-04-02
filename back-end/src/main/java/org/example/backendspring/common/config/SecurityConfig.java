@@ -20,11 +20,14 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+/**
+ * Spring Security 설정. OAuth2 로그인, JWT 필터, CORS를 구성한다.
+ */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Value("${cors.allowed-origins:http://localhost:5173}")
+    @Value("${cors.allowed-origins:http://localhost:5200}")
     private String allowedOrigins;
 
     private final CustomOAuth2UserService customOAuth2UserService;
@@ -41,6 +44,9 @@ public class SecurityConfig {
         this.jwtAuthFilter = jwtAuthFilter;
     }
 
+    /**
+     * Security 필터 체인을 구성한다.
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -71,6 +77,9 @@ public class SecurityConfig {
         return http.build();
     }
 
+    /**
+     * CORS 설정을 구성한다.
+     */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();

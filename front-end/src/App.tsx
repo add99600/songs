@@ -3,6 +3,7 @@ import { MainLayout } from '@/layouts/MainLayout'
 import { ProtectedRoute } from '@/features/auth/components/ProtectedRoute'
 import SearchPage from '@/pages/SearchPage'
 import MyFoldersPage from '@/pages/MyFoldersPage'
+import PlaylistDetailPage from '@/pages/PlaylistDetailPage'
 import SharedPage from '@/pages/SharedPage'
 import LoginPage from '@/pages/LoginPage'
 import OAuth2CallbackPage from '@/pages/OAuth2CallbackPage'
@@ -18,6 +19,7 @@ const router = createBrowserRouter([
         element: <ProtectedRoute />,
         children: [
           { path: 'my-folders', element: <MyFoldersPage /> },
+          { path: 'my-folders/:playlistId', element: <PlaylistDetailPage /> },
           { path: 'shared', element: <SharedPage /> },
         ],
       },
