@@ -3,8 +3,10 @@ package org.example.backendspring.song.lyrics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
 
+import java.time.Duration;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,7 +26,12 @@ public class BugsLyricsProvider implements LyricsProvider {
     private final RestClient restClient;
 
     public BugsLyricsProvider(RestClient.Builder restClientBuilder) {
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(Duration.ofSeconds(5));
+        factory.setReadTimeout(Duration.ofSeconds(10));
+
         this.restClient = restClientBuilder
+                .requestFactory(factory)
                 .baseUrl("https://music.bugs.co.kr")
                 .defaultHeader("User-Agent", USER_AGENT)
                 .build();

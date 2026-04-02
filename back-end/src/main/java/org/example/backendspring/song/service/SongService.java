@@ -18,6 +18,7 @@ import org.example.backendspring.song.dto.PagedSongResponse;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -119,9 +120,10 @@ public class SongService {
     // MongoDB에서 제목 또는 가수명으로 검색
     private List<Song> searchFromMongo(String keyword) {
         try {
+            String escaped = Pattern.quote(keyword);
             Criteria criteria = new Criteria().orOperator(
-                    Criteria.where("title").regex(keyword, "i"),
-                    Criteria.where("singer").regex(keyword, "i")
+                    Criteria.where("title").regex(escaped, "i"),
+                    Criteria.where("singer").regex(escaped, "i")
             );
             Query query = new Query(criteria);
             return mongoTemplate.find(query, Song.class);

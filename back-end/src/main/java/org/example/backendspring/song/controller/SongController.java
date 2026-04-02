@@ -34,7 +34,9 @@ public class SongController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        PagedSongResponse response = songService.searchPaged(keyword, page, size);
+        int safePage = Math.max(page, 0);
+        int safeSize = Math.max(1, Math.min(size, 100));
+        PagedSongResponse response = songService.searchPaged(keyword, safePage, safeSize);
         return ResponseEntity.ok(response);
     }
 

@@ -107,9 +107,16 @@ public class PlaylistService {
     /**
      * 플레이리스트에 포함된 노래 목록을 정렬 순서대로 조회한다.
      */
-    public List<PlaylistSongResponse> getSongsByPlaylistId(Long playlistId) {
-        if (!playlistRepository.existsById(playlistId)) {
-            throw new NoSuchElementException("플레이리스트를 찾을 수 없습니다. id=" + playlistId);
+    public List<PlaylistSongResponse> getSongsByPlaylistId(Long playlistId, Long userId) {
+        Playlist playlist = findPlaylistOrThrow(playlistId);
+
+        // 공개 플레이리스트이거나 소유자인 경우에만 허용
+        if (!playlist.isPublic() && !playlist.getOwner().getId().equals(userId)) {
+            // 공유 받은 사용자인지도 확인
+            boolean isShared = playlistShareRepository.existsByPlaylistIdAndSharedWithUserId(playlistId, userId);
+            if (!isShared) {
+                throw new AccessDeniedException("해당 플레이리스트에 대한 권한이 없습니다.");
+            }
         }
 
         List<PlaylistSong> songs = playlistSongRepository.findByPlaylistIdOrderBySortOrderAsc(playlistId);

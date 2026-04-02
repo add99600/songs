@@ -5,11 +5,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriUtils;
 
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 
@@ -34,7 +36,11 @@ public class MananaKaraokeClient {
             @Value("${manana.api.base-url:https://api.manana.kr}") String baseUrl,
             @Value("${manana.api.default-brand:tj}") String defaultBrand
     ) {
-        this.restClient = restClientBuilder.baseUrl(baseUrl).build();
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(Duration.ofSeconds(5));
+        factory.setReadTimeout(Duration.ofSeconds(10));
+
+        this.restClient = restClientBuilder.requestFactory(factory).baseUrl(baseUrl).build();
         this.defaultBrand = defaultBrand;
     }
 
